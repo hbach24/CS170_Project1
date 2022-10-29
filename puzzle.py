@@ -7,9 +7,10 @@ Operators: move blank left, right, up, or down
 
 '''
 #GOOD REFERENCE: SLide 24 & 25 for Week 1 Heuristic Search Slides
-default = [[1, 2, 3], [5, 0, 6], [4, 7, 8]]  #depth = 4 according to project instructions
+default = [[1, 2, 3], [5, 0, 6], [4, 7, 8]]
+# default = [[1,2,3,4], [5, 10, 6, 7], [8, 9, 0, 12], [13, 14, 15, 11]]
 goal = [[1, 2, 3], [4, 5, 6], [7, 8 , 0]]
-N = 3 #size of NxN matrix
+N = len(default) #size of NxN matrix
 #the DEPTH of the tree at which we find a solution is the COST for that solution (Blind Search Part 1 Slide 28)
 
 class Node:
@@ -21,7 +22,9 @@ class Node:
        self.children = []
 
 def main():
+    
     print("Welcome to Hannah Bach's 8-Puzzle Solver!\n")
+    print("size", N)
     choice = input("Enter '1' to use a default puzzle, or '2' to create your own.\n");
     if choice == '1':
         problem = defaultPuzzle()
@@ -33,6 +36,7 @@ def main():
     choice = input("    Enter '1' for Uniform Cost Search.\n    Enter '2' for A* with the Misplaced Tile heuristic.\n    Enter '3' for A* with the Manhattan Distance heuristic.\n")
     if(choice == '1'):
         # UniformCostSearch()
+
         root = Node(problem, 0, 0, 0)
         UniformCostSearch(root)
     if(choice == '2'):
@@ -65,15 +69,46 @@ def createPuzzle():
 
 
 def moveUp(currNode, blankRow, blankCol):
+    #REFERENCE: https://www.geeksforgeeks.org/copy-python-deep-copy-shallow-copy/
     childNode = copy.deepcopy(currNode)
     childNode.state[blankRow][blankCol] = currNode.state[blankRow-1][blankCol]
     childNode.state[blankRow-1][blankCol] = 0
     childNode.g = currNode.g + 1
     childNode.h = 0; #change this later
     childNode.f = childNode.g + childNode.h
-    # print("NEW CHILDNODE: ", childNode.state, childNode.g, childNode.h, childNode.f)
+    print("New child node after moving up: ", childNode.state,  " Current depth:", childNode.g)
     return childNode
     
+def moveDown(currNode, blankRow, blankCol):
+    childNode = copy.deepcopy(currNode)
+    childNode.state[blankRow][blankCol] = currNode.state[blankRow+1][blankCol]
+    childNode.state[blankRow+1][blankCol] = 0
+    childNode.g = currNode.g + 1
+    childNode.h = 0;
+    childNode.f = childNode.g + childNode.h
+    print("New child node after moving down: ", childNode.state, " Current depth:", childNode.g)
+    return childNode
+
+def moveLeft(currNode, blankRow, blankCol):
+    childNode = copy.deepcopy(currNode)
+    childNode.state[blankRow][blankCol] = currNode.state[blankRow][blankCol-1]
+    childNode.state[blankRow][blankCol-1] = 0
+    childNode.g = currNode.g + 1
+    childNode.h = 0;
+    childNode.f = childNode.g + childNode.h
+    print("New child node after moving left: ", childNode.state,  " Current depth:", childNode.g)
+    return childNode
+
+def moveRight(currNode, blankRow, blankCol):
+    childNode = copy.deepcopy(currNode)
+    childNode.state[blankRow][blankCol] = currNode.state[blankRow][blankCol+1]
+    childNode.state[blankRow][blankCol+1] = 0
+    childNode.g = currNode.g + 1
+    childNode.h = 0
+    childNode.f = childNode.g + childNode.h
+    print("New child node after moving right: ", childNode.state,  " Current depth:", childNode.g)
+    return childNode
+
 
 def expand(currNode):
     #find the blank space/zero 
@@ -88,15 +123,29 @@ def expand(currNode):
     # (2) add the node's children to the curr node's curr.children list and return its list so we can add it to the queue when we return to UCS
     # NOTE: set the children's g value to 1 (depth = 1)
 
-    #if located at corners, we only perform 2 moves
+    #if 0 is not located on the first row, we can move up
     if(blankRow != 0):
-        print("enter")
+        # print("moveUp")
         childNode = moveUp(currNode, blankRow, blankCol)
         currNode.children.append(childNode) #append the newly expanded/generated child node after performing a move_up operation to the current node's list of children
+    
+    #if 0 is not in the last row, we can move down
+    if(blankRow < N-1):
+        # print("moveDown")
+        childNode = moveDown(currNode, blankRow, blankCol)
+        currNode.children.append(childNode)
 
-
-
-    print("exp")
+    #if 0 is not located in the first column, we can move left
+    if(blankCol > 0):
+        # print("moveLeft")
+        childNode = moveLeft(currNode, blankRow, blankCol)
+        currNode.children.append(childNode)
+    
+    #if 0 is not located in the last column, we can move right
+    if(blankCol < N-1):
+        # print("moveRight")
+        childNode = moveRight(currNode, blankRow, blankCol)
+        currNode.children.append(childNode)
 
 def UniformCostSearch(root):
     nodes = queue.Queue() #queue for all the child nodes
@@ -121,10 +170,12 @@ def UniformCostSearch(root):
                 print(currNode.state)
                 visited.append(currNode.state) #add currNode's state to visited list so we don't expand it again
                 print("EXPAND currNode's children and add them to the queue") 
+
+                for i in range(len(currNode.children)):
+                    print(currNode.children[i].state)
         # print("visited", visited)
     
     return True; 
-        #TODO: https://stackoverflow.com/questions/71877490/checking-already-visited-states-in-a-solution-for-8-puzzle-problem
         
 #when expanding a node, only add children nodes that haven't been visited yet
 
