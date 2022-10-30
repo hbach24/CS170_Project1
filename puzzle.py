@@ -1,25 +1,28 @@
-import heapq
 import queue
 import copy
+import time
 '''
 Problem space:
 Operators: move blank left, right, up, or down
 
 '''
-#GOOD REFERENCE: SLide 24 & 25 for Week 1 Heuristic Search Slides
+#GOOD REFERENCE: Slide 24 & 25 for Week 1 Heuristic Search Slides
 default = [[1, 2, 3], [5, 0, 6], [4, 7, 8]]
+# default = [[1, 3, 6], [5, 0, 2], [4, 7, 8]]
 # default = [[1,2,3,4], [5, 10, 6, 7], [8, 9, 0, 12], [13, 14, 15, 11]]
 goal = [[1, 2, 3], [4, 5, 6], [7, 8 , 0]]
 N = len(default) #size of NxN matrix
+nodes = queue.Queue()
 #the DEPTH of the tree at which we find a solution is the COST for that solution (Blind Search Part 1 Slide 28)
 
 class Node:
      def __init__(self,state,h,g,f):
        self.state = state
-       self.h = h #h should be set to 0 for Uniform Cost Search
-       self.g = g #depth of the node
+       self.h = 0 #h should be set to 0 for Uniform Cost Search
+       self.g = 0 #depth of the node
        self.f = self.h + self.g
-       self.children = []
+
+    #    self.children = []
 
 def main():
     
@@ -117,43 +120,49 @@ def expand(currNode):
             if(currNode.state[i][j] == 0):
                 blankRow = i 
                 blankCol = j
-                print("Row, Col: ", blankRow, blankCol)
+                # print("Row, Col: ", blankRow, blankCol)
 
     # (1) expand the node's children by performing the valid operations: move_up, move_down, move_left, move_right
     # (2) add the node's children to the curr node's curr.children list and return its list so we can add it to the queue when we return to UCS
-    # NOTE: set the children's g value to 1 (depth = 1)
+    # NOTE: set the children's g value to (parent's node's depth + 1)
 
     #if 0 is not located on the first row, we can move up
     if(blankRow != 0):
         # print("moveUp")
         childNode = moveUp(currNode, blankRow, blankCol)
-        currNode.children.append(childNode) #append the newly expanded/generated child node after performing a move_up operation to the current node's list of children
+        nodes.put(childNode)
+        # currNode.children.append(childNode) #append the newly expanded/generated child node after performing a move_up operation to the current node's list of children
     
     #if 0 is not in the last row, we can move down
     if(blankRow < N-1):
         # print("moveDown")
         childNode = moveDown(currNode, blankRow, blankCol)
-        currNode.children.append(childNode)
+        nodes.put(childNode)
+        # currNode.children.append(childNode)
 
     #if 0 is not located in the first column, we can move left
     if(blankCol > 0):
         # print("moveLeft")
         childNode = moveLeft(currNode, blankRow, blankCol)
-        currNode.children.append(childNode)
+        nodes.put(childNode)
+        # currNode.children.append(childNode)
     
     #if 0 is not located in the last column, we can move right
     if(blankCol < N-1):
         # print("moveRight")
         childNode = moveRight(currNode, blankRow, blankCol)
-        currNode.children.append(childNode)
+        nodes.put(childNode)
+        # currNode.children.append(childNode)
 
 def UniformCostSearch(root):
-    nodes = queue.Queue() #queue for all the child nodes
+    expandCount = 0
+    # nodes = queue.Queue() #queue for all the child nodes
     visited = []
-    print("ROOT", root.state) 
+    print("ROOT START:", root.state) 
 
     # heapq.heappush(nodes, root) 
     nodes.put(root)
+    duration = time.time()
     while(1):
        
         if(nodes.qsize() == 0):
@@ -162,20 +171,26 @@ def UniformCostSearch(root):
         currNode = nodes.get()
         if(checkGoal(currNode)):
             # print("SIZE", nodes.qsize(), currNode)
-            print("Goal found!")
+            print("Goal found at depth", currNode.g)
+            print(currNode.state)
+            print("Expanded a total of", expandCount, "nodes.") 
+            t1 = time.time() - duration
+            print("Time elapsed: ", t1)
             return currNode;
         else:
             if(currNode.state not in visited):
+                print("Expanding node " , currNode.state, "at depth", currNode.g)  
+                expandCount += 1;
                 expand(currNode)
-                print(currNode.state)
+                print("\n-----------------------------------------------\n")
                 visited.append(currNode.state) #add currNode's state to visited list so we don't expand it again
-                print("EXPAND currNode's children and add them to the queue") 
 
-                for i in range(len(currNode.children)):
-                    print(currNode.children[i].state)
+                # for i in range(len(currNode.children)):
+                #     nodes.put(currNode.children[i])
+                    # print("TEST", currNode.children[i].h)
+                    # print(currNode.children[i].state)
         # print("visited", visited)
     
-    return True; 
         
 #when expanding a node, only add children nodes that haven't been visited yet
 
