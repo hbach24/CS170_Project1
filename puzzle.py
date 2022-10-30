@@ -15,9 +15,6 @@ goal = [[1, 2, 3],
         [4, 5, 6],
         [7, 8 ,0]]
 
-# default = [[6,0,3,14], [5, 8, 10, 2], [4, 1, 15, 13], [7, 12, 19, 11]] #N=4
-# goal = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,0]] #N=4
-
 # default = [[1, 2, 3], [5, 0, 6], [4, 7, 8]] #depth=4
 # default = [[1, 3, 6], [5, 0, 7], [4, 8, 2]] #depth=12
 # default = [[1, 6, 7], [5, 0, 3], [4, 8, 2]] #depth=16
@@ -25,6 +22,8 @@ goal = [[1, 2, 3],
 # default = [[0, 7, 2], [4, 6, 1], [3, 5, 8]] # depth=24
 
 N = len(default) #size of NxN matrix
+# print("Size N:", N);
+
 nodes = queue.PriorityQueue() #initialize priority queue here so we can add children nodes to the queue
 
 class Node:
@@ -41,7 +40,6 @@ class Node:
 def main():
     
     print("Welcome to Hannah Bach's 8-Puzzle Solver!\n")
-    print("size", N)
     choice = input("Enter '1' to use a default puzzle, or '2' to create your own.\n");
     if choice == '1':
         problem = defaultPuzzle()
@@ -224,9 +222,11 @@ def generalSearch(root, algo, algoName):
 
         if(checkGoal(currNode)):
             print("\t\t\tGOAL!!!\n")
-            print("\t",currNode.state, "\n")   
-            print("Goal found at depth", currNode.g, "using", algoName)   
-            print("Expanded a total of", expandCount, "nodes.") 
+            print("\tPuzzle", root.state, "solved!\n")
+     
+            print("Goal found at DEPTH", currNode.g, "using", algoName)   
+            print("\t\t", currNode.state)
+            print("\nExpanded a total of", expandCount, "nodes.") 
             print("Maximum queue size was", maxQsize, "nodes.")
             t1 = time.time() - duration
             print("Time elapsed: ", t1)
