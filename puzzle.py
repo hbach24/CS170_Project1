@@ -56,7 +56,11 @@ def main():
         algoName = "A* with the Misplaced Tile heuristic"
     if(algo == '3'):
         algoName = "A* with the Manhattan Distance heuristic"
+    
+    duration = time.time()
     generalSearch(root, algo, algoName)
+    t1 = time.time() - duration
+    print("Time elapsed: ", t1)
 
 
 def defaultPuzzle():
@@ -211,7 +215,7 @@ def generalSearch(root, algo, algoName):
     print("ROOT START:", root.state) 
 
     nodes.put(root)
-    duration = time.time()
+    
     while(1):
         if(maxQsize < nodes.qsize()):
             maxQsize = nodes.qsize()
@@ -228,9 +232,8 @@ def generalSearch(root, algo, algoName):
             print("\t\t", currNode.state)
             print("\nExpanded a total of", expandCount, "nodes.") 
             print("Maximum queue size was", maxQsize, "nodes.")
-            t1 = time.time() - duration
-            print("Time elapsed: ", t1)
             return currNode;
+            
         else:
             if(currNode.state not in visited): #when expanding a node, only add children nodes that haven't been visited yet
                 if(algo == '2'):
