@@ -7,7 +7,10 @@ Operators: move blank left, right, up, or down
 
 '''
 #GOOD REFERENCE: Slide 24 & 25 for Week 1 Heuristic Search Slides
-default = [[1, 2, 3], [5, 0, 6], [4, 7, 8]] #depth=4
+# default = [[1, 2, 3], [5, 0, 6], [4, 7, 8]] #depth=4
+default = [[1, 3, 6],
+[5, 0, 2],
+[4, 7, 8]]
 # default = [[1, 3, 6], [5, 0, 2], [4, 7, 8]] #depth=8
 goal = [[1, 2, 3], [4, 5, 6], [7, 8 , 0]]
 
@@ -42,14 +45,16 @@ def main():
     
     print("\nSelect the algorithm to solve your puzzle with: ")
     algo = input("    Enter '1' for Uniform Cost Search.\n    Enter '2' for A* with the Misplaced Tile heuristic.\n    Enter '3' for A* with the Manhattan Distance heuristic.\n")
-    if(algo == '1'):
-        root = Node(problem, 0, 0, 0)
-        generalSearch(root, algo)
-    if(algo == '2'):
-        root = Node(problem, 0, 0, 0)
-        generalSearch(root, algo)
-    if(algo == '3'):
-        manhattan()
+    # if(algo == '1'):
+    #     root = Node(problem, 0, 0, 0)
+    #     generalSearch(root, algo)
+    # if(algo == '2'):
+    #     root = Node(problem, 0, 0, 0)
+    #     generalSearch(root, algo)
+    # if(algo == '3'):
+    #     manhattan()
+    root = Node(problem, 0, 0, 0)
+    generalSearch(root, algo)
 
 
 def defaultPuzzle():
@@ -92,6 +97,7 @@ def moveUp(currNode, blankRow, blankCol, algo):
 
     if(algo == '3'):
         childNode.h = manhattan(childNode.state)
+        print("Manhattan distance:", childNode.h, "\n")
 
     childNode.f = childNode.g + childNode.h
     
@@ -112,6 +118,7 @@ def moveDown(currNode, blankRow, blankCol, algo):
 
     if(algo == '3'):
         childNode.h = manhattan(childNode.state)
+        print("Manhattan distance:", childNode.h, "\n")
 
     childNode.f = childNode.g + childNode.h
     
@@ -132,6 +139,7 @@ def moveLeft(currNode, blankRow, blankCol, algo):
 
     if(algo == '3'):
         childNode.h = manhattan(childNode.state)
+        print("Manhattan distance:", childNode.h, "\n")
 
     childNode.f = childNode.g + childNode.h
     return childNode
@@ -151,6 +159,7 @@ def moveRight(currNode, blankRow, blankCol, algo):
 
     if(algo == '3'):
         childNode.h = manhattan(childNode.state)
+        print("Manhattan distance:", childNode.h, "\n")
 
     childNode.f = childNode.g + childNode.h
     return childNode
@@ -195,12 +204,15 @@ def expand(currNode, algo):
 
 def generalSearch(root, algo):
     expandCount = 0
+    maxQsize = 0
     visited = []
     print("ROOT START:", root.state) 
 
     nodes.put(root)
     duration = time.time()
     while(1):
+        if(maxQsize < nodes.qsize()):
+            maxQsize = nodes.qsize()
         if(nodes.qsize() == 0):
             print("Failed to find the solution.")
             return False
@@ -211,6 +223,7 @@ def generalSearch(root, algo):
             print("Goal found at depth", currNode.g)
             print(currNode.state)
             print("Expanded a total of", expandCount, "nodes.") 
+            print("Maximum queue size was", maxQsize, "nodes")
             t1 = time.time() - duration
             print("Time elapsed: ", t1)
             return currNode;
@@ -229,7 +242,13 @@ def generalSearch(root, algo):
                 expandCount += 1;
                 expand(currNode, algo)
                 print("\n-----------------------------------------------\n")
-                visited.append(currNode.state) #add currNode's state to visited list so we don't expand it again
+#                 visited.append(currNode.state) #add currNode's state to visited list so we don't expand it again
+
+# def findValue(val):
+#     for i in range(N):
+#         for j in range(N):
+#             if(goal[i][j] == val):
+#                 return i, j
 
 def misplaced(currState):
     #calculates the number of misplaced tiles heuristic
@@ -241,8 +260,33 @@ def misplaced(currState):
                 misCount+=1;
     return misCount
 
-def manhattan():
+#REFERENCE for computing ManhattanDistance: #https://stackoverflow.com/questions/19770087/can-somebody-explain-in-manhattan-dstance-for-the-8-puzzle-in-java-for-me?noredirect=1&lq=1
+def manhattan(currState):
+    result = 0;
+    for i in range(N): 
+        for j in range(N): 
+            if (currState[i][j] != 0):  # ignore blank tile
+                    expRow = (currState[i][j] - 1) // N; # expected row value (floor division)
+                    expCol = (currState[i][j] - 1) % N; # expected column value
+                    distRow = i - expRow; # row distance to goal/expected value
+                    distCol = j - expCol; # col distance to goal/expected value
+                    result = result + abs(distRow) + abs(distCol) # adds up the row and col distances
+    return result
     print("A* with the Manhattan Distance heuristic")
+
+#TOO SLOW
+    # result = 0; 
+    # for i in range(N):
+    #     for j in range(N):
+    #         value = currState[i][j]
+    #         if(value != 0):
+    #             x, y = findValue(value)
+                
+    #             print("index", x, y)
+    #             print("Value", value)
+    #             result = result + abs(i - x) + abs(j - y); 
+    #             print("Difference", result,"\n")
+    # print(result)
 
 def checkGoal(currNode):
     #checks if the current node passed in here is equivalent to the goal state
