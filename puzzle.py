@@ -72,7 +72,7 @@ def defaultPuzzle():
 
 def createPuzzle():
     #referred to https://www.geeksforgeeks.org/take-matrix-input-from-user-in-python/ for help creating the puzzle
-    print("\nTo create your puzzle, please input the number of each tile row-wise. Make sure to press 'enter' after inputting each number.")
+    print("\nTo create your puzzle, please input the number of each tile row-wise. Make sure to press 'enter' after inputting each number. Use a zero for the blank tile.")
     newPuzzle = []
 
     for i in range(N):
