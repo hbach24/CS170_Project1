@@ -60,7 +60,7 @@ def main():
     duration = time.time()
     generalSearch(root, algo, algoName)
     t1 = time.time() - duration
-    print("Time elapsed: ", t1)
+    print("Time elapsed: ", t1, " seconds")
 
 
 def defaultPuzzle():
