@@ -15,11 +15,12 @@ goal = [[1, 2, 3],
         [4, 5, 6],
         [7, 8 ,0]]
 
+default = [[1, 2, 3], [4, 5, 6], [0, 7 ,8]] #depth=2
 # default = [[1, 2, 3], [5, 0, 6], [4, 7, 8]] #depth=4
 # default = [[1, 3, 6], [5, 0, 7], [4, 8, 2]] #depth=12
 # default = [[1, 6, 7], [5, 0, 3], [4, 8, 2]] #depth=16
 # default = [[7, 1, 2], [4, 8, 5], [6, 3, 0]] #depth=20
-# default = [[0, 7, 2], [4, 6, 1], [3, 5, 8]] # depth=24
+# default = [[0, 7, 2], [4, 6, 1], [3, 5, 8]] #depth=24
 
 N = len(default) #size of NxN matrix
 # print("Size N:", N);
@@ -60,7 +61,7 @@ def main():
     duration = time.time()
     generalSearch(root, algo, algoName)
     t1 = time.time() - duration
-    print("Time elapsed: ", t1, " seconds")
+    print("Time elapsed: ", round(t1,4), "seconds")
 
 
 def defaultPuzzle():
